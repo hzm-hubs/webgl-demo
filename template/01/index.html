@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebGL Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        border: 1px solid #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <script type="vertex" id="vertexShader">
+      attribute vec2 a_Position;
+      void main() {
+        gl_Position = vec4(a_Position,0.0,1.0); // 设置顶点位置 x,y,z,w,坐标数据w默认是1.0
+        gl_PointSize = 10.0; // 设置点的大小
+      }
+    </script>
+    <script type="fragment" id="fragmentShader">
+      void main() {
+        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+      }
+    </script>
+    <script type="module">
+      import { initShader } from "../utils/common.js";
+
+      const canvas = document.getElementById("webgl-canvas");
+
+      const gl =
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+      if (!gl) {
+        console.log("Your browser does not support WebGL");
+      }
+
+      const vertexSource = document.getElementById("vertexShader").innerText;
+      // const vertexSource = `
+      // attribute vec2 a_Position;
+      // void main() {
+      //   gl_Position = vec4(a_Position,0.0,1.0);
+      // }
+      // `;
+      const fragmentSource =
+        document.getElementById("fragmentShader").innerText;
+      // const fragmentSource = `
+      //  void main() {
+      //   gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+      //  }
+      // `;
+
+      const program = initShader(gl, vertexSource, fragmentSource);
+
+      // 创建顶点数据
+      const vertices = new Float32Array([0.0, 0.5, -0.5, -0.5, 0.5, -0.5]);
+
+      // 创建顶点缓冲区
+      const buffer = gl.createBuffer();
+
+      // 绑定buffer
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+      // 将顶点数据存入缓冲区中
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // gl.STATIC_DRAW, gl.DYNAMIC_DRAW,gl.STREAM_DRAW
+
+      // 获取顶点属性
+      const positionLocation = gl.getAttribLocation(program, "a_Position");
+
+      // 启用顶点属性数组
+      gl.enableVertexAttribArray(positionLocation);
+
+      // 指定解析数据规则
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+      // 绘制
+      gl.drawArrays(gl.LINE_LOOP, 0, 3); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+    </script>
+  </body>
+</html>
