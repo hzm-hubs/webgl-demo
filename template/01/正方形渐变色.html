@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebGL Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        border: 1px solid #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <script type="vertex" id="vertexShader">
+      attribute vec2 a_Position;
+      attribute vec4 a_Color;
+      varying vec4 v_Color;
+      void main() {
+        gl_Position = vec4(a_Position,0.0,1.0);
+        gl_PointSize = 2.0;
+        v_Color = a_Color;
+      }
+    </script>
+    <script type="fragment" id="fragmentShader">
+      precision mediump float; // 设置精度 片元着色器必须
+      varying vec4 v_Color;
+      void main() {
+      	gl_FragColor = v_Color;
+      }
+    </script>
+    <script type="module">
+      import { initShader } from "../utils/common.js";
+
+      const canvas = document.getElementById("webgl-canvas");
+
+      const gl =
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+      if (!gl) {
+        console.log("Your browser does not support WebGL");
+      }
+
+      const vertexSource = document.getElementById("vertexShader").innerText;
+
+      const fragmentSource =
+        document.getElementById("fragmentShader").innerText;
+
+      const program = initShader(gl, vertexSource, fragmentSource);
+
+      // 创建顶点数据
+      // 创建顶点数据
+      // -0.5,0.5
+      // 0.5,0.5
+      const vertices = new Float32Array([
+        -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5,
+      ]);
+
+      // 创建顶点缓冲区
+      const buffer = gl.createBuffer();
+
+      // 绑定buffer
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+      // 将顶点数据存入缓冲区中
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // gl.STATIC_DRAW, gl.DYNAMIC_DRAW,gl.STREAM_DRAW
+
+      // 获取顶点属性
+      const positionLocation = gl.getAttribLocation(program, "a_Position");
+
+      // 启用顶点属性数组
+      gl.enableVertexAttribArray(positionLocation);
+
+      // 指定解析数据规则
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+      const colorLocation = gl.getAttribLocation(program, "a_Color");
+
+      // 创建颜色数据
+      /*
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+      */
+      const colors = new Float32Array([
+        1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
+        1.0, 1.0,
+      ]);
+
+      const colorBuffers = gl.createBuffer();
+
+      // 绑定buffer
+      gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffers);
+
+      // 将颜色存入缓冲区中
+      gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+
+      gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0);
+
+      // 启用颜色
+      gl.enableVertexAttribArray(colorLocation);
+
+      // 绘制
+      gl.drawArrays(gl.LINE_LOOP, 0, 4); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+    </script>
+  </body>
+</html>
