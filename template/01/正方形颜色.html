@@ -1,85 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>WebGL Demo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      canvas {
-        border: 1px solid #f5f5f5;
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="webgl-canvas" width="500" height="500"></canvas>
-    <script type="vertex" id="vertexShader">
-      attribute vec2 a_Position;
-      void main() {
-        gl_Position = vec4(a_Position,0.0,1.0);
-        gl_PointSize = 2.0;
-      }
-    </script>
-    <script type="fragment" id="fragmentShader">
-      uniform vec4 u_Color;
-      void main() {
-        gl_FragColor = u_Color; // 红色
-      }
-    </script>
-    <script type="module">
-      import { initShader } from "../utils/common.js";
+	<head>
+		<meta charset="UTF-8" />
+		<title>WebGL Demo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			canvas {
+				border: 1px solid #f5f5f5;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="webgl-canvas" width="500" height="500"></canvas>
+		<script type="vertex" id="vertexShader">
+			attribute vec2 a_Position;
+			attribute vec2 a_Color;
+			void main() {
+			  gl_Position = vec4(a_Position,0.0,1.0);
+			  gl_PointSize = 2.0;
+			}
+		</script>
+		<script type="fragment" id="fragmentShader">
+			precision mediump float; // 设置精度 片元着色器必须
+			uniform vec4 u_Color;
+			void main() {
+				gl_FragColor = u_Color;
+			}
+		</script>
+		<script type="module">
+			import { initShader } from "../utils/common.js";
 
-      const canvas = document.getElementById("webgl-canvas");
+			const canvas = document.getElementById("webgl-canvas");
 
-      const gl =
-        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+			const gl =
+				canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 
-      if (!gl) {
-        console.log("Your browser does not support WebGL");
-      }
+			if (!gl) {
+				console.log("Your browser does not support WebGL");
+			}
 
-      const vertexSource = document.getElementById("vertexShader").innerText;
+			const vertexSource = document.getElementById("vertexShader").innerText;
 
-      const fragmentSource =
-        document.getElementById("fragmentShader").innerText;
+			const fragmentSource =
+				document.getElementById("fragmentShader").innerText;
 
-      const program = initShader(gl, vertexSource, fragmentSource);
+			const program = initShader(gl, vertexSource, fragmentSource);
 
-      // 创建顶点数据
-      const vertices = new Float32Array([
-        -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-      ]);
+			// 创建顶点数据
+			const vertices = new Float32Array([
+				-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+			]);
 
-      const colorLocation = gl.getUniformLocation(program, "u_Color");
+			// 创建顶点缓冲区
+			const buffer = gl.createBuffer();
 
-      gl.uniform4f(colorLocation, 1.0, 0.0, 0.0, 1.0); // 红色
+			// 绑定buffer
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-      // 创建顶点缓冲区
-      const buffer = gl.createBuffer();
+			// 将顶点数据存入缓冲区中
+			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // gl.STATIC_DRAW, gl.DYNAMIC_DRAW,gl.STREAM_DRAW
 
-      // 绑定buffer
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			// 获取顶点属性
+			const positionLocation = gl.getAttribLocation(program, "a_Position");
 
-      // 将顶点数据存入缓冲区中
-      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // gl.STATIC_DRAW, gl.DYNAMIC_DRAW,gl.STREAM_DRAW
+			// 启用顶点属性数组
+			gl.enableVertexAttribArray(positionLocation);
 
-      // 获取顶点属性
-      const positionLocation = gl.getAttribLocation(program, "a_Position");
+			// 指定解析数据规则
+			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-      // 启用顶点属性数组
-      gl.enableVertexAttribArray(positionLocation);
+			const colorLocation = gl.getUniformLocation(program, "u_Color");
 
-      // 指定解析数据规则
-      gl.vertexAttribPointer(
-        positionLocation,
-        2,
-        gl.FLOAT,
-        false,
-        2 * Float32Array.BYTES_PER_ELEMENT,
-        0
-      );
+			console.log("colorLocation", colorLocation);
+			if (!colorLocation) {
+				console.log("获取 colorLocation 失败");
+			} else {
+				gl.uniform4f(colorLocation, 0.0, 1.0, 0.0, 1.0); // 红色
+			}
 
-      // 绘制
-      gl.drawArrays(gl.TRIANGLES, 0, 6); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
-    </script>
-  </body>
+			// 绘制
+			gl.drawArrays(gl.TRIANGLES, 0, 6); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+		</script>
+	</body>
 </html>
