@@ -15,17 +15,44 @@
     <script type="vertex" id="vertexShader">
       attribute vec2 a_Position;
       void main() {
-        gl_Position = vec4(a_Position,0.0,1.0);
-        gl_PointSize = 2.0;
+        float radin = radians(45.0); // 内置角度转弧度函数 radians, degrees
+        float sin = sin(radin); // 内置三角函数 san, cos, tan, asin, acos, atan
+        float cos = cos(radin);
+        // 创建旋转矩阵
+        mat4 rotate = mat4(
+          cos, -sin, 0.0, 0.0,
+          sin, cos, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0.0, 0.0, 0.0, 1.0
+        );
+        gl_Position = rotate * vec4(a_Position,0.0,1.0);
+        gl_PointSize = 10.0;
       }
     </script>
     <script type="fragment" id="fragmentShader">
       void main() {
-        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+        gl_FragColor = vec4(1.0,0.0,0.0,1.0) ;
       }
     </script>
     <script type="module">
       import { initShader } from "../utils/common.js";
+
+      // 计算俩个坐标直接的三角函数关系 (a1 * Math.PI) / 180 弧度
+
+      // x1 = r * cosa;
+      // y1 = r * sina;
+
+      // x2 = r * cos(a + b);
+      //    = r * (cosa * cosb - sina * sinb)
+      //    = x1 * cosb - y1 * sinb
+      // y2 = r * sin(a + b);
+      //    = r * (sina * cosb + cosa * sinb)
+      //    = y1 * cosb + x1 * sinb
+
+      // 矩阵
+      //  | cosb -sinb |   | x1 |     | cosb*x1 - sinb*y1  |
+      //  |            | * |    |  =  |                   |
+      //  | sinb  cosb |   | y1 |     | sinb*x1 + cosb*y1 |
 
       const canvas = document.getElementById("webgl-canvas");
 
@@ -67,7 +94,9 @@
       gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
       // 绘制
-      gl.drawArrays(gl.LINE_LOOP, 0, 4); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+      gl.drawArrays(gl.POINTS, 0, 4); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+
+      gl.drawArrays(gl.LINE_LOOP, 0, 4);
     </script>
   </body>
 </html>

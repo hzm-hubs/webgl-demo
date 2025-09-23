@@ -14,9 +14,12 @@
     <canvas id="webgl-canvas" width="500" height="500"></canvas>
     <script type="vertex" id="vertexShader">
       attribute vec2 a_Position;
+      uniform vec2 u_Translation; // 矩阵变量
       void main() {
-        gl_Position = vec4(a_Position,0.0,1.0);
-        gl_PointSize = 2.0;
+        // vec2 newPosition = a_Position + u_Translation; // 平移公式
+        vec2 newPosition = a_Position * u_Translation; // 缩放公式
+        gl_Position = vec4(newPosition,0.0,1.0);
+        gl_PointSize = 10.0;
       }
     </script>
     <script type="fragment" id="fragmentShader">
@@ -66,6 +69,17 @@
       // 指定解析数据规则
       gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
+      // 获取平移索引
+      const translationLocation = gl.getUniformLocation(
+        program,
+        "u_Translation"
+      );
+
+      // 设置变量
+      gl.uniform2f(translationLocation, 0.5, 0.5);
+      //   gl.uniform2fv(translationLocation, [0.5, 0.5]);
+
+      gl.drawArrays(gl.POINTS, 0, 4);
       // 绘制
       gl.drawArrays(gl.LINE_LOOP, 0, 4); // gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLES, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
     </script>
