@@ -114,38 +114,6 @@
         -0.5,
         0.5,
         0.5,
-        1.0, //
-        -0.5,
-        -0.5,
-        -0.5,
-        1.0,
-        -0.5,
-        0.5,
-        -0.5,
-        1.0, //
-        0.5,
-        -0.5,
-        -0.5,
-        1.0,
-        0.5,
-        0.5,
-        -0.5,
-        1.0, //
-        0.5,
-        -0.5,
-        0.5,
-        1.0,
-        0.5,
-        0.5,
-        0.5,
-        1.0, //
-        -0.5,
-        -0.5,
-        0.5,
-        1.0,
-        -0.5,
-        0.5,
-        0.5,
         1.0,
       ]);
 
@@ -168,16 +136,17 @@
       gl.vertexAttribPointer(positionLocation, 4, gl.FLOAT, false, 0, 0);
 
       // 绘制第一个面
-      gl.drawArrays(gl.POINTS, 0, 4);
-      gl.drawArrays(gl.LINE_LOOP, 0, 4);
-      // 绘制第二个面
-      gl.drawArrays(gl.POINTS, 4, 4);
-      gl.drawArrays(gl.LINE_LOOP, 4, 4);
-      // 两个面链接
-      gl.drawArrays(gl.LINES, 8, 2);
-      gl.drawArrays(gl.LINES, 10, 2); // 这里练错了 可能是坐标轴方向搞混了
-      gl.drawArrays(gl.LINES, 12, 2);
-      gl.drawArrays(gl.LINES, 14, 2);
+      // gl.drawArrays(gl.POINTS, 0, 4);
+      // gl.drawArrays(gl.LINE_LOOP, 0, 4);
+      // // 绘制第二个面
+      // gl.drawArrays(gl.POINTS, 4, 4);
+      // gl.drawArrays(gl.LINE_LOOP, 4, 4);
+      // // 两个面链接
+      // gl.drawArrays(gl.LINES, 8, 2);
+      // gl.drawArrays(gl.LINES, 10, 2);
+      // gl.drawArrays(gl.LINES, 12, 2);
+      // gl.drawArrays(gl.LINES, 14, 2);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 8);
     </script>
   </body>
 </html>
